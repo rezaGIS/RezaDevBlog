@@ -1,0 +1,59 @@
+﻿body {
+    font-family: "Georgia";
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: black;
+    background-color: #ececec;
+}
+
+    body > p {
+        padding: 25px;
+    }
+/*Bootstrap.css overrites*/
+
+.navbar-default .navbar-nav > li > a {
+    color: white;
+}
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+    color: #000000;
+    background-color: #ffffff;
+    border-color:none;
+}
+/*Custom classes*/
+.container-title {
+    background-color: #666666;
+    border-radius: 10px;
+    color: #ffffff;
+}
+
+.container-light {
+    background-color: #ffffff;
+    border-radius: 10px;
+    color: #000000;
+}
+
+.social-media-icons {
+    margin: 10px;
+    height: 20px;
+}
+
+.main-page {
+    margin-top: 250px;
+    margin-right: 25px;
+    margin-left: 25px;
+}
+
+.border-sides {
+    border-left: solid;
+    border-right: solid;
+    border-bottom: none;
+    border-top: none;
+    border-color: #000000;
+    border-radius: 0px;
+    border-width: 1px;
+}
+
+p {
+    padding: 15px;
+}
