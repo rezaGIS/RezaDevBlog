@@ -18,7 +18,7 @@
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
     color: #000000;
     background-color: #ffffff;
-    border-color:none;
+    border-color: none;
 }
 /*Custom classes*/
 .container-title {
@@ -57,3 +57,57 @@
 p {
     padding: 15px;
 }
+/*Filter styling*/
+.filter {
+    font-weight: bold;
+    display: inline-block;
+    padding: 5px 5px;
+    border: solid;
+    border-width: 2px;
+    border-radius: 6px;
+    width: auto;
+    -webkit-box-shadow: 3px 5px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 5px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 3px 5px 5px 0px rgba(0,0,0,0.75);
+    margin:15px;
+}
+
+    .filter.html {
+        outline-color: #E34C26;
+        color: #E34C26;
+        background-color: #f9dad2;
+    }
+
+    .filter.css {
+        outline-color: #1f62af;
+        color: #1f62af;
+        background-color: #d4e4f7;
+    }
+
+    .filter.python {
+        color: #003300;
+        border-color: #003300;
+        background-color: #b3ffb3;
+    }
+    .filter.python:hover {
+        line-height:30px;
+    }   
+
+    .filter.js {
+        color: #000000;
+        border-color: #000000;
+        background-color: #f9f0b9;
+    }
+
+    .filter.csharp {
+        color: red;
+    }
+
+    .filter > .span > text {
+        bottom: 0px;
+    }
+    /*Custom Modals*/
+
+    .modal-xlg {
+        width: 90%;
+    }
