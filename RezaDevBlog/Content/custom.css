@@ -1,9 +1,13 @@
-﻿body {
+﻿html {
+  overflow-y: scroll;
+}
+body {
     font-family: "Georgia";
     font-size: 14px;
     line-height: 1.42857143;
     color: black;
     background-color: #ececec;
+
 }
 
     body > p {
@@ -109,5 +113,16 @@ p {
     /*Custom Modals*/
 
     .modal-xlg {
-        width: 90%;
+        width: 70%;
+    }
+    .modal-header {
+        background-color:#336b33;
+    }
+    .modal-open {
+        padding-right:0 !important;
+    }
+    .text-area-modals {
+        height:300px;
+        width:500px;
+        resize:none;
     }

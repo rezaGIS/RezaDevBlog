@@ -1,12 +1,220 @@
 ﻿
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+    <h2 class="modal-title text-center" id="myModalLabel">Creating Custom Form for Feature Layer Submission</h2>
 </div>
-<div class="modal-body">
+<div class="modal-body text-center">
     <p>
-        I've aways felt the default edit feature class / create feature class tool in ArcGIS Javascript API feels a bit too 'GIS nerdy' for the casual user.  I'm not a big fan of creating the feature first and then populating the attribute table, and well the attribute table that appears to me just looks plain ugly.
-        In this demo i'll show you how to create a custom form and to save it so it will be ready to be applied to a feature class or a graphic if needed.
+        I've aways felt the default edit feature class / create feature class tool in ArcGIS Javascript API feels a bit too 'GIS nerdy' for the casual user.
+        I'm not a big fan of creating the feature first and then populating the attribute table, and well the attribute table that appears to me just looks plain ugly.
+        In this demo i'll show you how to create a custom form and to save it so it will be ready to be applied to a feature class or a graphic if needed.  Of course,
+        this demo will look ugly also, but it will show you how to create your own custom form, from there you can style and make it as nice as you want.
+    </p>
+    <h2 class="text-center">Setting up workspace</h2>
+    <p>
+        <ul>
+            <li>
+                First we need to create a simple map.  You can use ESRI’s Sandbox or just copy the following code:
+                <a href="https://developers.arcgis.com/javascript/3/sandbox/sandbox.html" target="_blank">ESRI JS 3.x Sandbox</a>; Or download here from my github: <a href="" target="_blank">@rezaGIS</a>
+            </li>
+            <li>Next we need to add in jQuery CDN as I've used that in my example <a href="http://code.jquery.com/" target="_blank">jQuery Site</a></li>
+
+        </ul>
+        Cool now that we got that set up, now we can get to work.
+    </p>
+
+    <h3 class="text-center">Styling basic template</h3>
+    <p>
+        First lets set up our styling, we are going to need the main map div and a side pane that has some basic buttons and a basic form.
+    </p>
+    <p>
+        In the style script, lets add the following code:
+    </p>
+    <textarea class="text-area-modals" readonly>
+        .left-container {
+        width: 350px;
+        height: 600px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        border-style: solid;
+        border-color: black;
+        margin: 10px;
+        }
+
+        .mid-container {
+        height: 600px;
+        width: 1000px;
+        left: 360px;
+        border-style: solid;
+        border-color: black;
+        position: absolute;
+        margin: 10px;
+        }
+
+        .form {
+        border-width: 1px;
+        border-style: solid;
+        width: auto;
+        height: auto;
+        margin: 10px;
+        padding: 10px;
+        }
+    </textarea>
+    <p>It should look like this in your editor, or using the Sandbox</p>
+    <img src="/Blog/images/styleScriptAdd.jpg" />
+    <p>Now lets modify the HTML a bit for a crude display.  Navigate to the body section in your HTML and replace with the following.</p>
+    <textarea class="text-area-modals" readonly>
+        <body>
+            <div class="left-container">
+                <h2>Attributes</h2>
+                <form class="form">
+                    <label>Field_Text:</label><input id="field1" />
+                    <br />
+                    <label>Field_Integer:</label><input id="field2" />
+                </form>
+                <p> Create your graphic</p>
+                <button id="createGraphic">Create Graphic</button>
+                <p>Save your graphic and attributes</p>
+                <button id="saveGraphic">Save to Feature</button>
+            </div>
+            <div class="mid-container">
+                <div id="map"></div>
+            </div>
+        </body>
+    </textarea>
+    <p>Sweet, it should look like this on your end</p>
+    <img src="/Blog/images/addHTMLtoBody.jpg" />
+    <h2>Adding in the Javascript</h2>
+    <p>
+        Now that we have the basic page set up, lets go ahead and start adding some javascript to our example to get this demo up and going.
+        Lets go ahead and add in the modules or widgets we need for this examples.
+    </p>
+    <textarea class="text-area-modals" readonly>
+        require(["esri/map",
+        "esri/layers/FeatureLayer",
+        "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/Color",
+        "esri/graphic",
+        "esri/geometry/Circle",
+        "dojo/domReady!"],
+        function (Map,
+        FeatureLayer,
+        SimpleFillSymbol,
+        SimpleLineSymbol,
+        SimpleMarkerSymbol,
+        Color,
+        Graphic,
+        Circle) {
+
+    </textarea>
+    <img src="/Blog/images/AfterRequire.jpg" />
+    <p>
+        What is going on here is we are now calling the modules located in the ESRI api.  This will open up options for us in manipulating the data we will be working with.
+        If you noticed in my screen shot my map object was a bit different so lets go ahead and update that too.
+    </p>
+    <textarea class="text-area-modals" readonly>
+        map = new Map("map", {
+        basemap: "topo",  //For full list of pre-defined basemaps, navigate to http://arcg.is/1JVo6Wd
+        center: [-107.205, 38.944], // Colorado center
+        zoom: 7 // Zoomed out a bit to get a better perspective of our location
+        });
+
+    </textarea>
+    <img src="/Blog/images/mapObject.jpg" />
+    <p>
+        All we did in this step was set the map to Colorado's extent, and we zoomed out a bit so we can get a better perspective of where we are in the world. </br>
+        For the basemap there are plenty of options you can select besides "topo"; check out <a href="http://arcg.is/1JVo6Wd" target="_blank">Basemaps Available</a>
+    </p>
+    <p>
+        Next we want to add in our Feature Layer that we can edit. 
+        For this tutorial I have a Feature Service that is publicly available that we can use as a test.
+        After the map object, add in the following code:
+    </p>
+    <textarea class="text-area-modals" readonly>
+        var featureLayer = new FeatureLayer("https://gis.colorado.gov/oit/rest/services/OIT/FeatureServices_Public/FeatureServer/1", {
+        outFields: ["*"]
+        });
+        map.addLayer(featureLayer);
+    </textarea>
+    <img src="/Blog/images/FeatureLayer.jpg" />
+    <p>
+        This will add in the FeatureService that has the ability to edit features through ArcGIS’s Rest API.  
+        We also added in the map.addLayer(featureLayer); which is adding the feature layer we defined into the map.
+    </p>
+    <p>
+        Now that we have our map object created, and our editable feature service added, lets create a standard shape for us to insert into the service.  
+        For this purpose we are going to use a circle.  
+        It can be any type of polygon, but I find using a the circle graphic easy and quick for this purpose.  
+        (To add lines or points, the service that we added via FeatureLayer object needs to be either a line or a point)
+    </p>
+    <p>
+        Lets first define the properties of the graphic we want to create.
+    </p>
+    <textarea class="text-area-modals" readonly>
+        var circleSymb = new SimpleFillSymbol(
+            SimpleFillSymbol.STYLE_NULL,
+            new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+            new Color([105, 105, 105]), 2
+            ), new Color([255, 255, 0, 0.25])
+        );
+    </textarea>
+    <p>
+        All we are doing here is creating symbology for the circle.  
+        There are many options you could do here feel free to explore and try other options by using ESRI’s API Documentation.
+    </p>
+    <p>
+        Now that we have the basics set up, lets create the interactions between the form and the features. 
+        Since we want to use a form, lets go ahead and do this by using graphics first to get a visual confirmation and then we can submit, so this will be a two-step process, setting the properties and graphic, and then submitting to the Feature Service.
+    </p>
+    <textarea class="text-area-modals" readonly>
+        //Click create graphic to begin this
+        $('#createGraphic').click(function drawBtn() {
+            map.on("click", function mapClick(evt) {
+                var buffDist = 10;
+                map.graphics.clear();
+
+                // gets cursor xy and converts to center
+                var latitude = evt.mapPoint.getLatitude();
+                var longitude = evt.mapPoint.getLongitude();
+                var clickCenter = ([longitude, latitude]);
+
+                // Creats circle
+                var symbol = new SimpleMarkerSymbol()
+                .setStyle("circle")
+                .setColor(new Color([255, 0, 0, 0.5]));
+
+                var circle = new Circle({
+                    center: clickCenter,
+                    geodesic: true,
+                    radius: buffDist,
+                    radiusUnit: "esriMiles"
+                });
+
+                var graphic = new Graphic(circle, circleSymb); // Converts circle to graphic
+                // can just set outside of  apply edits
+                graphic.setAttributes({
+                    "Field_Text": field1.value,
+                    "Field_Integer": field2.value,
+                });
+                // Adds graphic to map to visual; not necessary if you dont want
+                map.graphics.add(graphic);
+                // If you want to separate the submission of data, create a seperate event and a button to fire it.
+                // Submits Graphic to Feature Layer
+                console.log(graphic);
+                featureLayer.applyEdits([graphic], null, null, function () { // creates initial
+                    featureLayer.applyEdits(null, [graphic], null); // updates with attributes
+                });
+            });
+        });
+    </textarea>
+    <img src="/Blog/images/create.jpg" />
+    <p>
+        And that’s it, that’s all we must do to set up a basic form, of course there is a lot of styling and form validation that could be added to this.
     </p>
 </div>
 <div class="modal-footer">
